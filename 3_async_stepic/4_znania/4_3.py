@@ -1,32 +1,33 @@
 import asyncio
 
-async def print_message():
-    while True:
-        print("Имитация работы функции")
-        await asyncio.sleep(1)
+shared_resource = 0
 
-async def interrupt_handler(interupt_flag):
-    while True:
-        await asyncio.sleep(0.5)
-        
-        if interupt_flag.is_set():
-            print("Программа остановлена")
-            interupt_flag.clear()
-            break
+async def update_resource(lock: asyncio.Lock = None, name=""):
+    global shared_resource
+    
+    if lock:
+        async with lock:
+            print("Начинаем обновление shared_resource")
+            temp = shared_resource
+            await asyncio.sleep(2)
+            shared_resource = temp + 1
+            print("Обновлен shared_resource завершено")
+    else:
+    
+        print("Начинаем обновление shared_resource")
+    
+        temp = shared_resource
+        await asyncio.sleep(2)  
+
+        shared_resource = temp + 1
+        print("Обновлен shared_resource завершено")
+
 
 async def main():
-    interrupt_flag = asyncio.Event()
-    
-    task1 = asyncio.create_task(print_message())
-    task2 = asyncio.create_task(interrupt_handler(interrupt_flag))
-    
-    while True:
-        await asyncio.sleep(3)
-        
-        interrupt_flag.set()
-        await task2
-        task2 = asyncio.create_task(interrupt_handler(interrupt_flag))
+    lock = asyncio.Lock()
+    await asyncio.gather(*[update_resource() for _ in range(5)])
+    # await asyncio.gather(update_resource(lock), update_resource(lock))
+    print(f"shared_resource: {shared_resource}")
 
 if __name__ == "__main__":
     asyncio.run(main())
-        
