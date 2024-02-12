@@ -2,7 +2,7 @@ import asyncio
 
 async def my_task():
     print("Task started")
-    
+
 
 async def main():
     loop = asyncio.get_running_loop()
