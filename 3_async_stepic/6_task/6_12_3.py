@@ -14,6 +14,9 @@ async def get_message(code):
     # if message in data2:
     task.add_done_callback(print_code)
     # print(f"Код: {code}")
+    code_check = int(code[-1], 16)
+    if code_check % 2 == 0:
+        return code, "Неверный код, сообщение скрыто"
 
     return code, message
 
