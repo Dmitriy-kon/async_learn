@@ -42,19 +42,35 @@ async def main():
     #         # res = task.get_name()
     #         print(f"{task.get_name()} не успел вовремя сесть в автобус")
 
+    tasks = []
+    
+    try:
+        async with asyncio.TaskGroup() as tg:
+            for passanger in passengers:
+                task = tg.create_task(take_bus(passanger))
+                tasks.append(task)
+    except asyncio.TimeoutError:
+        pass
+    
+    for task in tasks:
+        if not task.cancelled():
+            print(task.result())
+        else:
+            print(f"{task.get_name()} не успел вовремя сесть в автобус")
+    # print(tasks)
     
     
     
-    fin, pend = await asyncio.wait(tasks, timeout=5)
-    for task in fin:
-        res = task.result()
-        print(f"{res.name} сел в автобус")
+    # fin, pend = await asyncio.wait(tasks, timeout=5)
+    # for task in fin:
+    #     res = task.result()
+    #     print(f"{res.name} сел в автобус")
 
-    for task in pend:
-        print(task.done())
-        print(task.cancelled())
-        passenger = task.get_coro().cr_frame.f_locals["passanger"]
-        print(f"{passenger.name} {passenger.job} не успел вовремя сесть в автобус")
+    # for task in pend:
+    #     print(task.done())
+    #     print(task.cancelled())
+    #     passenger = task.get_coro().cr_frame.f_locals["passanger"]
+    #     print(f"{passenger.name} {passenger.job} не успел вовремя сесть в автобус")
 
 
 if __name__ == "__main__":
