@@ -1,7 +1,7 @@
 import asyncio
 
-
-semaphore = asyncio.Semaphore(2)
+semaphore = asyncio.BoundedSemaphore(2)
+# semaphore = asyncio.Semaphore(2)
 
 
 async def my_coro(id):
