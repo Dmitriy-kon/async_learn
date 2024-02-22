@@ -24,9 +24,8 @@ def limit_rate(calls_limit: int =5, timeout: int =3):
         
         async def inner_coro(*args, **kwargs):
             async with semaphore:
-                res = await coro(*args, **kwargs)
                 await asyncio.sleep(timeout)
-                return res
+                return await coro(*args, **kwargs)
         return inner_coro
     return wrapper
             
